@@ -1,0 +1,111 @@
+﻿@inherits LayoutComponentBase
+
+<Layout Style="min-height: 100vh; ">
+    <Sider Collapsible Collapsed=@collapsed OnCollapse=@onCollapse Style="background:#336699">
+        <div class="groupTitle">@BoxGroupTitle</div>
+        <Menu class="group-menu" Mode="MenuMode.Inline">
+            @foreach (var box_group in Caches.boxgroups)
+            {
+                RenderFragment subTitle =@<span>
+                        <Icon Type="code-sandbox" Theme="outline" />
+                        <span>@box_group.name</span>
+                    </span>;
+                <SubMenu TitleTemplate=subTitle>
+                    @foreach (var box in Caches.boxs.Where(w => w.uid == box_group.uid).ToList())
+                    {
+                        RenderFragment sub_subTitle = @<span>
+                            <Icon Type="dropbox" Theme="outline" />
+                            <span>@Caches.StringTruncat(box.alias,5,"...")</span>
+                        </span>;
+                        <Popover Content="@box.alias">
+                            <SubMenu TitleTemplate=sub_subTitle>
+                                @foreach (var dmon_group in Caches.dmonsgroups.Where(w=>w.BoxNo==box.boxNo).ToList())
+                                {
+                                    <Popover Content="@dmon_group.GroupName">
+                                        <MenuItem @onclick="x=>ShowBox(dmon_group.GroupId.ToString())">
+                                            <Icon Type="inbox" Theme="outline" />
+                                            <span>@Caches.StringTruncat(dmon_group.GroupName,5,"...")</span>
+                                        </MenuItem>
+                                    </Popover>
+                                }
+                            </SubMenu>
+                        </Popover>
+                    }
+                </SubMenu>
+            }
+        </Menu>
+    </Sider>
+    <Layout Class="site-layout">
+        <Header class="header">Header</Header>
+        <Content class="content">
+            <div class="BodyBox">
+                <Layout>
+                    @Body
+                </Layout>
+            </div>
+        </Content>
+        <Footer class="footer">FBoxListenling ©2022 Created by ZHANGYU</Footer>
+    </Layout>
+</Layout>
+
+
+<style>
+    .groupTitle {
+        font-size: 25px;
+        color: #FFFFFF;
+        background: #336699;
+        text-align: center;
+        margin-right: 70px;
+    }
+
+    .group-menu {
+        color: #FFFFFF;
+        background: #336699;
+    }
+
+    .header {
+        background: #99CCFF;
+        color: #FFFFFF;
+        font-size: 30px;
+    }
+
+    .footer {
+        text-align: center;
+        height: 60px;
+        bottom: 0;
+        background: #99CCFF;
+        color: #FFFFFF;
+    }
+
+    .content {
+        background: #CCCCCC;
+    }
+
+    .BodyBox {
+        background: #FFF;
+        margin: 20px;
+        min-height: 41vw;
+    }
+</style>
+
+@code {
+    [Inject]
+    private HttpClient? httpClient { get; set; }
+    [Inject]
+    private NavigationManager? NavigationManager { get; set; }
+    public string BoxGroupTitle { get; set; } = "盒子组别";
+
+    bool collapsed;
+
+    void onCollapse(bool collapsed)
+    {
+        Console.WriteLine(collapsed);
+        this.collapsed = collapsed;
+        BoxGroupTitle = BoxGroupTitle == "" ? "盒子组别" : "";
+    }
+
+    void ShowBox(string dmon_group_groupid)
+    {
+        NavigationManager?.NavigateTo("/" + dmon_group_groupid);
+    }
+}

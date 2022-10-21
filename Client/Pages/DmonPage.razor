@@ -1,0 +1,46 @@
+﻿@page "/{dmon_group_groupid}"
+@inherits DmonPageBase
+
+<div>
+    <AntList Style="margin:20px;" Grid="grid" DataSource="@Data">
+        <ListItem>
+            <div @onclick="_=>open(context)">
+                <Card Bordered Title="@(context.Dmondtov2Name)" Hoverable="true">
+                    <Body>
+                        <p>编码方式：@(context.Encoding)</p>
+                        <p>死区值：@(context.DeadValue)</p>
+                        <p>小数位：@(context.FractionalDigits)</p>
+                        <p>备注：@(context.Memo)</p>
+                    </Body>
+                </Card>
+            </div>
+        </ListItem>
+    </AntList>
+    <Drawer Closable="true" Width="600" Visible=@visible Placement="right" Title=@drawTitle OnClose="_=>close()">
+        <div>
+            <p>Value:@cachevalue</p>
+            <p>
+                <ELine Option="@Option" Class="chart-normal"></ELine>
+            </p>
+            <p>
+                <AntList Bordered DataSource="@record" Size="small" Style="height:500px;overflow-y:auto;">
+                    <Header>记录表</Header>
+                    <ChildContent>
+                        <ListItem>
+                            <span><Text Mark>@context.value</Text></span>@context.time
+                        </ListItem>
+                    </ChildContent>
+                </AntList>
+            </p>
+        </div>
+    </Drawer>
+</div>
+
+<style>
+    .chart-normal {
+        border-radius: 4px;
+        height: 300px;
+        width: 70hw;
+        margin-top: 20px;
+    }
+</style>
